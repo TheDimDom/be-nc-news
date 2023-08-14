@@ -5,7 +5,7 @@ function getTopics(request, response, next) {
   const { description } = request.params;
   readTopics(slug, description)
     .then((topics) => {
-      response.status(200).send({ topics });
+      response.status(200).send(topics);
     })
     .catch((err) => {
       next(err);

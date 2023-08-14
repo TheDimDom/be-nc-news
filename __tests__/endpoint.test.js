@@ -16,4 +16,27 @@ describe("testing get requests", () => {
   test("200: /api/topics", () => {
     return request(app).get("/api/topics").expect(200);
   });
+  test("200: /api/topics returns an array of the correct length", () => {
+    return request(app)
+      .get("/api/topics")
+      .expect(200)
+      .then((response) => {
+        expect(Array.isArray(response.body)).toBe(true);
+        const topics = response.body;
+        expect(topics.length).toBe(3);
+      });
+  });
+  test("200: check that objects in array have correct properties", () => {
+    return request(app)
+      .get("/api/topics")
+      .expect(200)
+      .then((response) => {
+        expect(Array.isArray(response.body)).toBe(true);
+        const topics = response.body;
+        topics.forEach((topic) => {
+          expect(topic).toHaveProperty("slug");
+          expect(topic).toHaveProperty("description");
+        });
+      });
+  });
 });
