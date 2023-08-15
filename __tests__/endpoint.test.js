@@ -72,10 +72,20 @@ describe("api/articles/:article_id", () => {
 
   test("400: checks for bad request with article_id = 0", () => {
     return request(app)
-      .get("/api/articles/0")
+      .get("/api/articles/5000")
+      .expect(404)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Not Found" });
+      });
+  })
+  test("400: wrong data type", () => {
+    return request(app)
+      .get("/api/articles/hello")
       .expect(400)
       .then((response) => {
-        expect(response.body).toEqual({ msg: "Bad request" });
+        expect(response.body).toEqual({ msg: "Bad Request" });
       });
   });
+  
+
 });
