@@ -8,8 +8,4 @@ const readTopics = () => {
   });
 };
 
-const readEndpoints = () => {
-  return Promise.resolve(endpointsJson);
-};
-
-module.exports = { readTopics, readEndpoints };
+module.exports = { readTopics };

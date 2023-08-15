@@ -3,7 +3,7 @@ const testData = require("../db/data/test-data");
 const seed = require("../db/seeds/seed");
 const request = require("supertest");
 const connection = require("../db/connection.js");
-const expectedResponse = require("../endpoints.json");
+const jsonEndpoints = require("../endpoints.json");
 const { response } = require("../app.js");
 
 beforeEach(() => {
@@ -34,16 +34,12 @@ describe("/api/topics", () => {
 });
 
 describe("/api", () => {
-  test("200: /api returns the correct JSON file, with correct length and as an object", () => {
+  test("200: /api returns the correct JSON file", () => {
     return request(app)
       .get("/api")
       .expect(200)
       .then((response) => {
-        expect(response.body).toEqual(expectedResponse);
-        expect(typeof response.body).toBe("object");
-        expect(Object.keys(response.body).length).toBe(
-          Object.keys(expectedResponse).length
-        );
+        expect(response.body).toEqual(jsonEndpoints);
       });
   });
 });

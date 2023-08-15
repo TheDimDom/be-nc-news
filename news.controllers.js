@@ -1,4 +1,5 @@
 const { readTopics, readEndpoints } = require("./news.models.js");
+const endpointsJson = require("./endpoints.json");
 
 function getTopics(request, response, next) {
   readTopics()
@@ -11,7 +12,7 @@ function getTopics(request, response, next) {
 }
 
 function getEndpoints(request, response, next) {
-  readEndpoints()
+  return Promise.resolve(endpointsJson)
     .then((endpoints) => {
       response.status(200).send(endpoints);
     })

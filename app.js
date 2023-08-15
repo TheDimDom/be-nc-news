@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const { getTopics, getEndpoints } = require("./news.controllers");
+const { getTopics, getEndpoints, getArticleId } = require("./news.controllers");
 
 app.get("/api/topics", getTopics);
 
