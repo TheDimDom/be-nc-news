@@ -78,6 +78,4 @@ describe("api/articles/:article_id", () => {
         expect(response.body).toEqual({ msg: "Bad request" });
       });
   });
-  
-  
 });
