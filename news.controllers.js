@@ -1,9 +1,8 @@
-const { readTopics } = require("./news.models.js");
+const { readTopics, readEndpoints } = require("./news.models.js");
+const endpointsJson = require("./endpoints.json");
 
 function getTopics(request, response, next) {
-  const { slug } = request.query;
-  const { description } = request.params;
-  readTopics(slug, description)
+  readTopics()
     .then((topics) => {
       response.status(200).send(topics);
     })
@@ -12,6 +11,17 @@ function getTopics(request, response, next) {
     });
 }
 
+function getEndpoints(request, response, next) {
+  return Promise.resolve(endpointsJson)
+    .then((endpoints) => {
+      response.status(200).send(endpoints);
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
+
 module.exports = {
   getTopics,
+  getEndpoints,
 };
