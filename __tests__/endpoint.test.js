@@ -4,7 +4,8 @@ const seed = require("../db/seeds/seed");
 const request = require("supertest");
 const connection = require("../db/connection.js");
 const jsonEndpoints = require("../endpoints.json");
-const { response } = require("../app.js");
+const { readAllArticles } = require("../news.models");
+const jestSorted = require('jest-sorted')
 
 beforeEach(() => {
   return seed(testData);
@@ -77,7 +78,8 @@ describe("api/articles/:article_id", () => {
       .then((response) => {
         expect(response.body).toEqual({ msg: "Not Found" });
       });
-  })
+  });
+
   test("400: wrong data type", () => {
     return request(app)
       .get("/api/articles/hello")
@@ -86,6 +88,17 @@ describe("api/articles/:article_id", () => {
         expect(response.body).toEqual({ msg: "Bad Request" });
       });
   });
-  
+});
 
+describe("/api/articles", () => {
+  test("200: returns articles ordered by created_at in descending order", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        const articles = response.body;
+        expect(articles.length).toBeGreaterThan(0);
+        expect(articles).toBeSorted({ descending: true });
+      });
+  });
 });
