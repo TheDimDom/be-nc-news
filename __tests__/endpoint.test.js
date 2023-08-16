@@ -4,7 +4,7 @@ const seed = require("../db/seeds/seed");
 const request = require("supertest");
 const connection = require("../db/connection.js");
 const jsonEndpoints = require("../endpoints.json");
-const { response } = require("../app.js");
+const { readAllArticles } = require("../news.models");
 
 beforeEach(() => {
   return seed(testData);
@@ -77,7 +77,8 @@ describe("api/articles/:article_id", () => {
       .then((response) => {
         expect(response.body).toEqual({ msg: "Not Found" });
       });
-  })
+  });
+
   test("400: wrong data type", () => {
     return request(app)
       .get("/api/articles/hello")
@@ -86,6 +87,35 @@ describe("api/articles/:article_id", () => {
         expect(response.body).toEqual({ msg: "Bad Request" });
       });
   });
-  
+});
 
+describe("/api/articles", () => {
+  test("200: retrieves all articles", () => {
+    return request(app).get("/api/articles").expect(200);
+  });
+
+  test("200: returns articles ordered by created_at in descending order", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        const articles = response.body;
+        for (let i = 0; i < articles.length - 1; i++) {
+          const currentDate = new Date(articles[i].created_at).getTime();
+          const nextDate = new Date(articles[i + 1].created_at).getTime();
+          expect(currentDate).toBeGreaterThanOrEqual(nextDate);
+        }
+      });
+  });
+  test("200: articles should not have a body property", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        const articles = response.body;
+        articles.forEach((article) => {
+          expect(article).not.toHaveProperty("body");
+        });
+      });
+  });
 });

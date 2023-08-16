@@ -4,14 +4,18 @@ const {
   getTopics,
   getEndpoints,
   getArticleById,
+  getAllArticles
 } = require("./news.controllers");
 const { handle400s, handleCustomErrors } = require("./error.controllers.js");
+
 
 app.get("/api/topics", getTopics);
 
 app.get("/api", getEndpoints);
 
 app.get("/api/articles/:article_id", getArticleById);
+
+app.get("/api/articles", getAllArticles)
 
 app.use(handle400s);
 
