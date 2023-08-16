@@ -4,10 +4,13 @@ const {
   getTopics,
   getEndpoints,
   getArticleById,
-  getAllArticles
+  getAllArticles,
+  getCommentsByArticleId,
+  postNewComment
 } = require("./news.controllers");
 const { handle400s, handleCustomErrors } = require("./error.controllers.js");
 
+app.use(express.json())
 
 app.get("/api/topics", getTopics);
 
@@ -16,6 +19,10 @@ app.get("/api", getEndpoints);
 app.get("/api/articles/:article_id", getArticleById);
 
 app.get("/api/articles", getAllArticles)
+
+app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
+
+app.post("/api/articles/:article_id/comments", postNewComment)
 
 app.use(handle400s);
 

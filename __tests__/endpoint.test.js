@@ -5,7 +5,7 @@ const request = require("supertest");
 const connection = require("../db/connection.js");
 const jsonEndpoints = require("../endpoints.json");
 const { readAllArticles } = require("../news.models");
-const jestSorted = require('jest-sorted')
+const jestSorted = require("jest-sorted");
 
 beforeEach(() => {
   return seed(testData);
@@ -71,7 +71,7 @@ describe("api/articles/:article_id", () => {
       });
   });
 
-  test("400: checks for bad request with article_id = 0", () => {
+  test("404: checks for bad request with article_id = 5000", () => {
     return request(app)
       .get("/api/articles/5000")
       .expect(404)
@@ -99,6 +99,96 @@ describe("/api/articles", () => {
         const articles = response.body;
         expect(articles.length).toBeGreaterThan(0);
         expect(articles).toBeSorted({ descending: true });
+      });
+  });
+});
+
+describe("/api/articles/:article_id/comments", () => {
+  test("200: check length and comment property", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then((response) => {
+        const comments = response.body;
+        expect(comments.length).toBeGreaterThan(0);
+        expect(comments).toBeSorted({ descending: true });
+        comments.forEach((comment) => {
+          expect(comment).toHaveProperty("comment_id");
+          expect(comment).toHaveProperty("votes");
+          expect(comment).toHaveProperty("created_at");
+          expect(comment).toHaveProperty("author");
+          expect(comment).toHaveProperty("body");
+          expect(comment).toHaveProperty("article_id");
+        });
+      });
+  });
+  test("404: checks for bad request with article_id = 5000", () => {
+    return request(app)
+      .get("/api/articles/5000/comments")
+      .expect(404)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Not Found" });
+      });
+  });
+  test("400: wrong data type", () => {
+    return request(app)
+      .get("/api/articles/hello/comments")
+      .expect(400)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Bad Request" });
+      });
+  });
+});
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("201: adds a comment to an article", () => {
+    const newComment = {
+      username: "icellusedkars",
+      body: "This is a test comment.",
+    };
+    const articleId = 1;
+    return request(app)
+      .post(`/api/articles/${articleId}/comments`)
+      .send(newComment)
+      .expect(201)
+      .then((response) => {
+        const addedComment = response.body;
+        expect(addedComment).toHaveProperty("comment_id");
+        expect(addedComment).toHaveProperty("author", newComment.username);
+        expect(addedComment).toHaveProperty("body", newComment.body);
+        expect(addedComment).toHaveProperty("article_id", 1);
+        expect(addedComment).toHaveProperty("created_at");
+        expect(addedComment).toHaveProperty("votes", 0);
+      });
+  });
+  test("401: uses incorrect username", () => {
+    const newComment = {
+      username: "testuser",
+      body: "This is a test comment.",
+    };
+    const articleId = 1;
+    return request(app)
+      .post(`/api/articles/${articleId}/comments`)
+      .send(newComment)
+      .expect(401)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Unauthorised User" });
+      });
+  })
+  test("404: checks for bad request with article_id = 5000", () => {
+    return request(app)
+      .get("/api/articles/5000/comments")
+      .expect(404)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Not Found" });
+      });
+  });
+  test("400: wrong data type", () => {
+    return request(app)
+      .get("/api/articles/hello/comments")
+      .expect(400)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Bad Request" });
       });
   });
 });
