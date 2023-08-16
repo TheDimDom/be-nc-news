@@ -43,3 +43,49 @@ describe("/api", () => {
       });
   });
 });
+
+describe("api/articles/:article_id", () => {
+  test("200: making sure it returns an article", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then((article) => {
+        expect(article.body).toHaveProperty(["author"]);
+        expect(article.body).toHaveProperty(["title"]);
+        expect(article.body).toHaveProperty(["article_id"]);
+        expect(article.body).toHaveProperty(["body"]);
+        expect(article.body).toHaveProperty(["topic"]);
+        expect(article.body).toHaveProperty(["created_at"]);
+        expect(article.body).toHaveProperty(["votes"]);
+        expect(article.body).toHaveProperty(["article_img_url"]);
+      });
+  });
+  test("200: making sure it returns the correct article", () => {
+    const articleId = 1;
+    return request(app)
+      .get(`/api/articles/${articleId}`)
+      .expect(200)
+      .then((article) => {
+        expect(article.body.article_id).toBe(articleId);
+      });
+  });
+
+  test("400: checks for bad request with article_id = 0", () => {
+    return request(app)
+      .get("/api/articles/5000")
+      .expect(404)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Not Found" });
+      });
+  })
+  test("400: wrong data type", () => {
+    return request(app)
+      .get("/api/articles/hello")
+      .expect(400)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Bad Request" });
+      });
+  });
+  
+
+});
