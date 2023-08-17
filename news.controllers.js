@@ -1,4 +1,9 @@
-const { readTopics, readArticleById, readAllArticles } = require("./news.models.js");
+const {
+  readTopics,
+  readArticleById,
+  readAllArticles,
+  readCommentsByArticleId
+} = require("./news.models.js");
 const endpointsJson = require("./endpoints.json");
 
 function getTopics(request, response, next) {
@@ -42,9 +47,21 @@ function getAllArticles(request, response, next) {
     });
 }
 
+function getCommentsByArticleId(request, response, next) {
+  const { article_id } = request.params;
+  readCommentsByArticleId(article_id)
+    .then((comments) => {
+      response.status(200).send(comments);
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
+
 module.exports = {
   getTopics,
   getEndpoints,
   getArticleById,
-  getAllArticles
+  getAllArticles,
+  getCommentsByArticleId
 };

@@ -5,7 +5,7 @@ const request = require("supertest");
 const connection = require("../db/connection.js");
 const jsonEndpoints = require("../endpoints.json");
 const { readAllArticles } = require("../news.models");
-const jestSorted = require('jest-sorted')
+const jestSorted = require("jest-sorted");
 
 beforeEach(() => {
   return seed(testData);
@@ -99,6 +99,52 @@ describe("/api/articles", () => {
         const articles = response.body;
         expect(articles.length).toBeGreaterThan(0);
         expect(articles).toBeSorted({ descending: true });
+      });
+  });
+});
+
+describe("/api/articles/:article_id/comments", () => {
+  test("200: check length and comment property", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then((response) => {
+        const comments = response.body;
+        expect(comments.length).toBeGreaterThan(0);
+        expect(comments).toBeSorted({ descending: true });
+        comments.forEach((comment) => {
+          expect(comment).toHaveProperty("comment_id");
+          expect(comment).toHaveProperty("votes");
+          expect(comment).toHaveProperty("created_at");
+          expect(comment).toHaveProperty("author");
+          expect(comment).toHaveProperty("body");
+          expect(comment.article_id).toBe(1);
+        });
+      });
+  });
+  test("200: returns empty array if no comment", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then((response) => {
+        const comments = response.body;
+        expect(comments).toEqual([])
+      })
+  })
+  test("404: checks for bad request with article_id = 5000", () => {
+    return request(app)
+      .get("/api/articles/5000/comments")
+      .expect(404)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Not Found" });
+      });
+  });
+  test("400: wrong data type", () => {
+    return request(app)
+      .get("/api/articles/hello/comments")
+      .expect(400)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Bad Request" });
       });
   });
 });
