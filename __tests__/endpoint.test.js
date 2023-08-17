@@ -118,10 +118,19 @@ describe("/api/articles/:article_id/comments", () => {
           expect(comment).toHaveProperty("created_at");
           expect(comment).toHaveProperty("author");
           expect(comment).toHaveProperty("body");
-          expect(comment).toHaveProperty("article_id");
+          expect(comment.article_id).toBe(1);
         });
       });
   });
+  test("200: returns empty array if no comment", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then((response) => {
+        const comments = response.body;
+        expect(comments).toEqual([])
+      })
+  })
   test("404: checks for bad request with article_id = 5000", () => {
     return request(app)
       .get("/api/articles/5000/comments")

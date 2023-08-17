@@ -16,12 +16,13 @@ const readArticleById = (article_id) => {
       } else {
         return rows[0];
       }
-    })
+    });
 };
 
 const readAllArticles = () => {
   return db
-    .query(`
+    .query(
+      `
       SELECT 
         articles.author,
         articles.title,
@@ -35,7 +36,8 @@ const readAllArticles = () => {
       LEFT JOIN comments ON articles.article_id = comments.article_id
       GROUP BY articles.article_id
       ORDER BY articles.created_at DESC;
-    `)
+    `
+    )
     .then(({ rows }) => {
       return rows;
     });
@@ -49,11 +51,16 @@ const readCommentsByArticleId = (article_id) => {
     )
     .then(({ rows }) => {
       if (rows.length === 0) {
-        return Promise.reject({ status: 404, msg: "Not Found" });
+        return [];
       } else {
         return rows;
       }
     });
 };
 
-module.exports = { readTopics, readArticleById, readAllArticles, readCommentsByArticleId };
+module.exports = {
+  readTopics,
+  readArticleById,
+  readAllArticles,
+  readCommentsByArticleId,
+};
