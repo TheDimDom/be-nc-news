@@ -2,7 +2,8 @@ const {
   readTopics,
   readArticleById,
   readAllArticles,
-  readCommentsByArticleId
+  readCommentsByArticleId,
+  createComment,
 } = require("./news.models.js");
 const endpointsJson = require("./endpoints.json");
 
@@ -47,6 +48,15 @@ function getAllArticles(request, response, next) {
     });
 }
 
+function postNewComment(request, response, next) {
+  const { article_id } = request.params;
+  const { username, body } = request.body;
+  createComment(article_id, username, body).then((comment) => {
+    response.status(201).send(comment)
+  }).catch((err) => {
+    next (err)
+  })
+}
 function getCommentsByArticleId(request, response, next) {
   const { article_id } = request.params;
   readCommentsByArticleId(article_id)
@@ -58,10 +68,12 @@ function getCommentsByArticleId(request, response, next) {
     });
 }
 
+
 module.exports = {
   getTopics,
   getEndpoints,
   getArticleById,
   getAllArticles,
+  postNewComment,
   getCommentsByArticleId
 };
