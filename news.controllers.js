@@ -48,17 +48,6 @@ function getAllArticles(request, response, next) {
     });
 }
 
-function getCommentsByArticleId(request, response, next) {
-  const { article_id } = request.params;
-  readCommentsByArticleId(article_id)
-    .then((comments) => {
-      response.status(200).send(comments);
-    })
-    .catch((err) => {
-      next(err);
-    });
-}
-
 function postNewComment(request, response, next) {
   const { article_id } = request.params;
   const { username, body } = request.body;
@@ -74,6 +63,5 @@ module.exports = {
   getEndpoints,
   getArticleById,
   getAllArticles,
-  getCommentsByArticleId,
   postNewComment,
 };
