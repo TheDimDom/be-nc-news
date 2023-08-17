@@ -124,6 +124,45 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(addedComment).toHaveProperty("votes", 0);
       });
   });
+  test("201: ignores extra property", () => {
+    const newComment = {
+      username: "icellusedkars",
+      body: "This is a test comment.",
+      foo: "Unnecessary Property",
+    };
+    const articleId = 1;
+    return request(app)
+      .post(`/api/articles/${articleId}/comments`)
+      .send(newComment)
+      .expect(201)
+      .then((response) => {
+        const addedComment = response.body;
+        expect(addedComment).not.toHaveProperty("foo");
+      });
+  });
+  test("400: wrong data type", () => {
+    const articleId = "hello";
+    return request(app)
+      .post(`/api/articles/${articleId}/comments`)
+      .expect(400)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Bad Request" });
+      });
+  });
+  test("400: missing required fields", () => {
+    const newComment = {
+      username: "",
+      body: "",
+    };
+    const articleId = 1;
+    return request(app)
+      .post(`/api/articles/${articleId}/comments`)
+      .send(newComment)
+      .expect(400)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Bad Request" });
+      });
+  });
   test("401: uses incorrect username", () => {
     const newComment = {
       username: "testuser",
@@ -137,6 +176,18 @@ describe("POST /api/articles/:article_id/comments", () => {
       .then((response) => {
         expect(response.body).toEqual({ msg: "Unauthorised User" });
       });
-  })
-
+  });
+  test("404: checks for bad request with article_id = 5000", () => {    const newComment = {
+    username: "icellusedkars",
+    body: "This is a test comment.",
+  };
+    const articleId = 5000;
+    return request(app)
+      .post(`/api/articles/${articleId}/comments`)
+      .send(newComment)
+      .expect(404)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Not Found" });
+      });
+  });
 });

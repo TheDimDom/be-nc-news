@@ -44,19 +44,34 @@ const readAllArticles = () => {
 };
 
 const createComment = (article_id, username, body) => {
+  if (!username || !body) {
+    return Promise.reject({ status: 400, msg: "Bad Request" });
+  }
   return db
-    .query(
-      "INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING *",
-      [article_id, username, body]
-    )
+    .query("SELECT * FROM articles WHERE article_id = $1", [article_id])
     .then(({ rows }) => {
       if (rows.length === 0) {
-        return Promise.reject({ status: 404, msg: "Not Found" });
+        return Promise.reject({ status: 404, msg: "Article Not Found" });
       } else {
-        return rows[0];
+        return db.query(
+          "INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING *",
+          [article_id, username, body]
+        );
       }
+    })
+    .then(({ rows }) => {
+      const addedComment = {
+        comment_id: rows[0].comment_id,
+        author: rows[0].author,
+        body: rows[0].body,
+        article_id: rows[0].article_id,
+        created_at: rows[0].created_at,
+        votes: rows[0].votes,
+      };
+      return addedComment;
     });
 };
+
 
 module.exports = {
   readTopics,
