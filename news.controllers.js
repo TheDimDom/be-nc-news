@@ -4,6 +4,7 @@ const {
   readAllArticles,
   readCommentsByArticleId,
   createComment,
+  readUsers
 } = require("./news.models.js");
 const endpointsJson = require("./endpoints.json");
 
@@ -68,6 +69,15 @@ function getCommentsByArticleId(request, response, next) {
     });
 }
 
+function getUsers(request, response, next) {
+  readUsers()
+    .then((users) => {
+      response.status(200).send(users);
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
 
 module.exports = {
   getTopics,
@@ -75,5 +85,6 @@ module.exports = {
   getArticleById,
   getAllArticles,
   postNewComment,
-  getCommentsByArticleId
+  getCommentsByArticleId,
+  getUsers
 };

@@ -190,18 +190,18 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(response.body).toEqual({ msg: "Bad Request" });
       });
   });
-  test("404: checks for bad request with article_id = 5000", () => {    
+  test("404: checks for bad request with article_id = 5000", () => {
     const newComment = {
-    username: "icellusedkars",
-    body: "This is a test comment.",
-  };
+      username: "icellusedkars",
+      body: "This is a test comment.",
+    };
 
     const articleId = 5000;
     return request(app)
       .post(`/api/articles/${articleId}/comments`)
-      .send(newComment)
-})
-})
+      .send(newComment);
+  });
+});
 
 describe("/api/articles/:article_id/comments", () => {
   test("200: check length and comment property", () => {
@@ -228,9 +228,9 @@ describe("/api/articles/:article_id/comments", () => {
       .expect(200)
       .then((response) => {
         const comments = response.body;
-        expect(comments).toEqual([])
-      })
-  })
+        expect(comments).toEqual([]);
+      });
+  });
   test("404: checks for bad request with article_id = 5000", () => {
     return request(app)
       .get("/api/articles/5000/comments")
@@ -245,6 +245,26 @@ describe("/api/articles/:article_id/comments", () => {
       .expect(400)
       .then((response) => {
         expect(response.body).toEqual({ msg: "Bad Request" });
+      });
+  });
+});
+
+describe("/api/users", () => {
+  test("200: returns all users", () => {
+    return request(app).get("/api/users").expect(200);
+  });
+  test("200: check that objects in array have correct properties", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((response) => {
+        const users = response.body;
+        expect(users.length).toBe(4);
+        users.forEach((user) => {
+          expect(user).toHaveProperty("username");
+          expect(user).toHaveProperty("name");
+          expect(user).toHaveProperty("avatar_url");
+        });
       });
   });
 });

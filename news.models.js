@@ -88,10 +88,17 @@ const readCommentsByArticleId = (article_id) => {
     });
 };
 
+const readUsers = () => {
+  return db.query("SELECT * FROM users").then(({ rows }) => {
+    return rows;
+  });
+};
+
 module.exports = {
   readTopics,
   readArticleById,
   readAllArticles,
   createComment,
   readCommentsByArticleId,
+  readUsers
 };
