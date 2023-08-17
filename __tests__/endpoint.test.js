@@ -5,7 +5,7 @@ const request = require("supertest");
 const connection = require("../db/connection.js");
 const jsonEndpoints = require("../endpoints.json");
 const { readAllArticles } = require("../news.models");
-const jestSorted = require('jest-sorted')
+const jestSorted = require("jest-sorted");
 
 beforeEach(() => {
   return seed(testData);
