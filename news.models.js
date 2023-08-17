@@ -60,10 +60,9 @@ const createComment = (article_id, username, body) => {
       }
     })
     .then(({ rows }) => {
-      return rows[0]
+      return rows[0];
     });
 };
-
 
 const readCommentsByArticleId = (article_id) => {
   return db
@@ -88,10 +87,26 @@ const readCommentsByArticleId = (article_id) => {
     });
 };
 
+const deleteCommentByCommentId = (comment_id) => {
+  return db
+    .query("SELECT * FROM comments WHERE comment_id =$1", [comment_id])
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "Not Found" });
+      }
+      return db
+        .query("DELETE FROM comments WHERE comment_id = $1", [comment_id])
+        .then(() => {
+          return Promise.resolve({ status: 204 });
+        });
+    });
+};
+
 module.exports = {
   readTopics,
   readArticleById,
   readAllArticles,
   createComment,
   readCommentsByArticleId,
+  deleteCommentByCommentId,
 };

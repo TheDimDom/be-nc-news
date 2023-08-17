@@ -4,6 +4,7 @@ const {
   readAllArticles,
   readCommentsByArticleId,
   createComment,
+  deleteCommentByCommentId
 } = require("./news.models.js");
 const endpointsJson = require("./endpoints.json");
 
@@ -68,6 +69,16 @@ function getCommentsByArticleId(request, response, next) {
     });
 }
 
+function deleteComment(request, response, next) {
+  const { comment_id } = request.params
+  deleteCommentByCommentId(comment_id)
+  .then(() => {
+    response.status(204).send({});
+  })
+  .catch((err) => {
+    next(err);
+  });
+}
 
 module.exports = {
   getTopics,
@@ -75,5 +86,6 @@ module.exports = {
   getArticleById,
   getAllArticles,
   postNewComment,
-  getCommentsByArticleId
+  getCommentsByArticleId,
+  deleteComment
 };

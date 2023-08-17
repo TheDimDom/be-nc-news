@@ -190,18 +190,18 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(response.body).toEqual({ msg: "Bad Request" });
       });
   });
-  test("404: checks for bad request with article_id = 5000", () => {    
+  test("404: checks for bad request with article_id = 5000", () => {
     const newComment = {
-    username: "icellusedkars",
-    body: "This is a test comment.",
-  };
+      username: "icellusedkars",
+      body: "This is a test comment.",
+    };
 
     const articleId = 5000;
     return request(app)
       .post(`/api/articles/${articleId}/comments`)
-      .send(newComment)
-})
-})
+      .send(newComment);
+  });
+});
 
 describe("/api/articles/:article_id/comments", () => {
   test("200: check length and comment property", () => {
@@ -228,9 +228,9 @@ describe("/api/articles/:article_id/comments", () => {
       .expect(200)
       .then((response) => {
         const comments = response.body;
-        expect(comments).toEqual([])
-      })
-  })
+        expect(comments).toEqual([]);
+      });
+  });
   test("404: checks for bad request with article_id = 5000", () => {
     return request(app)
       .get("/api/articles/5000/comments")
@@ -242,6 +242,33 @@ describe("/api/articles/:article_id/comments", () => {
   test("400: wrong data type", () => {
     return request(app)
       .get("/api/articles/hello/comments")
+      .expect(400)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Bad Request" });
+      });
+  });
+});
+
+describe.only("/api/comments/:comment_id", () => {
+  test("204: deletes comment", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+      .then((response) => {
+        expect(response.body).toEqual({});
+      });
+  });
+  test("404: returns 404 if no comment", () => {
+    return request(app)
+      .delete("/api/comments/5000")
+      .expect(404)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Not Found" });
+      });
+  });
+  test("400: wrong data type", () => {
+    return request(app)
+      .delete("/api/comments/hello")
       .expect(400)
       .then((response) => {
         expect(response.body).toEqual({ msg: "Bad Request" });
