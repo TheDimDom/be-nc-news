@@ -177,6 +177,19 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(response.body).toEqual({ msg: "Unauthorised User" });
       });
   });
+  test("400: uses incorrect username", () => {
+    const newComment = {
+      username: "testuser",
+    };
+    const articleId = 1;
+    return request(app)
+      .post(`/api/articles/${articleId}/comments`)
+      .send(newComment)
+      .expect(400)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Bad Request" });
+      });
+  });
   test("404: checks for bad request with article_id = 5000", () => {    const newComment = {
     username: "icellusedkars",
     body: "This is a test comment.",

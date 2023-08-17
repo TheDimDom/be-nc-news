@@ -60,15 +60,7 @@ const createComment = (article_id, username, body) => {
       }
     })
     .then(({ rows }) => {
-      const addedComment = {
-        comment_id: rows[0].comment_id,
-        author: rows[0].author,
-        body: rows[0].body,
-        article_id: rows[0].article_id,
-        created_at: rows[0].created_at,
-        votes: rows[0].votes,
-      };
-      return addedComment;
+      return rows[0]
     });
 };
 
