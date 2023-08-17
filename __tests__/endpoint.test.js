@@ -131,14 +131,14 @@ describe("/api/articles/:article_id/comments", () => {
         expect(comments).toEqual([])
       })
   })
-  // test("404: checks for bad request with article_id = 5000", () => {
-  //   return request(app)
-  //     .get("/api/articles/5000/comments")
-  //     .expect(404)
-  //     .then((response) => {
-  //       expect(response.body).toEqual({ msg: "Not Found" });
-  //     });
-  // });
+  test("404: checks for bad request with article_id = 5000", () => {
+    return request(app)
+      .get("/api/articles/5000/comments")
+      .expect(404)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Not Found" });
+      });
+  });
   test("400: wrong data type", () => {
     return request(app)
       .get("/api/articles/hello/comments")
