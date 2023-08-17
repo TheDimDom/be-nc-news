@@ -57,6 +57,17 @@ function postNewComment(request, response, next) {
     next (err)
   })
 }
+function getCommentsByArticleId(request, response, next) {
+  const { article_id } = request.params;
+  readCommentsByArticleId(article_id)
+    .then((comments) => {
+      response.status(200).send(comments);
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
+
 
 module.exports = {
   getTopics,
@@ -64,4 +75,5 @@ module.exports = {
   getArticleById,
   getAllArticles,
   postNewComment,
+  getCommentsByArticleId
 };

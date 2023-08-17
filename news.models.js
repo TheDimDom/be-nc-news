@@ -65,9 +65,33 @@ const createComment = (article_id, username, body) => {
 };
 
 
+const readCommentsByArticleId = (article_id) => {
+  return db
+    .query(
+      "SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC",
+      [article_id]
+    )
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return db
+          .query("SELECT * FROM articles WHERE article_id = $1", [article_id])
+          .then(({ rows: articleRows }) => {
+            if (articleRows.length === 0) {
+              return Promise.reject({ status: 404, msg: "Not Found" });
+            } else {
+              return [];
+            }
+          });
+      } else {
+        return rows;
+      }
+    });
+};
+
 module.exports = {
   readTopics,
   readArticleById,
   readAllArticles,
   createComment,
+  readCommentsByArticleId,
 };
