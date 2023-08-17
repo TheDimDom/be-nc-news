@@ -6,7 +6,8 @@ const {
   getArticleById,
   getAllArticles,
   getCommentsByArticleId,
-  postNewComment
+  postNewComment,
+  updateArticle,
 } = require("./news.controllers");
 const { handle400s, handleCustomErrors } = require("./error.controllers.js");
 
@@ -23,6 +24,8 @@ app.get("/api/articles", getAllArticles);
 app.post("/api/articles/:article_id/comments", postNewComment);
 
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
+
+app.patch("/api/articles/:article_id", updateArticle);
 
 app.use(handle400s);
 
