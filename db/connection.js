@@ -10,12 +10,11 @@ if (!process.env.PGDATABASE && !process.env.DATABASE_URL) {
 }
 
 
-const config = {};
+const config = {
+  connectionString: process.env.DATABASE_URL,
+  max: 2, 
+};
 
-if (ENV === 'production') {
-  config.connectionString = process.env.DATABASE_URL;
-  config.max = 2;
-}
-new Pool(config) 
+const pool = new Pool(config) 
 
 module.exports = new Pool();
