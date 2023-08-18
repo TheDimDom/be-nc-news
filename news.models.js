@@ -18,7 +18,36 @@ const readArticleById = (article_id) => {
     });
 };
 
-const readAllArticles = () => {
+const validTopics = ["mitch", "cats", "paper"];
+
+const validSortColumns = [
+  "author",
+  "title",
+  "article_id",
+  "topic",
+  "created_at",
+  "votes",
+];
+
+const readAllArticles = (topic, sort_by = "created_at", order = "desc") => {
+  if (!validSortColumns.includes(sort_by)) {
+    return Promise.reject({ status: 400, msg: "Invalid sort_by column" });
+  }
+  if (!["asc", "desc"].includes(order)) {
+    return Promise.reject({
+      status: 400,
+      msg: "Order must be 'asc' or 'desc'",
+    });
+  }
+  if (topic) {
+    return db.query(
+      "SELECT * FROM articles WHERE topic = $1 ORDER BY " +
+        sort_by +
+        " " +
+        order,
+      [topic]
+    );
+  }
   return db
     .query(
       `
@@ -34,7 +63,11 @@ const readAllArticles = () => {
       FROM articles
       LEFT JOIN comments ON articles.article_id = comments.article_id
       GROUP BY articles.article_id
-      ORDER BY articles.created_at DESC;
+      ORDER BY ` +
+        sort_by +
+        ` ` +
+        order +
+        `;
     `
     )
     .then(({ rows }) => {
@@ -125,8 +158,8 @@ const updateArticleVotes = (article_id, inc_votes) => {
 const readUsers = () => {
   return db.query("SELECT * FROM users").then(({ rows }) => {
     return rows;
-  })
-}
+  });
+};
 
 module.exports = {
   readTopics,

@@ -7,6 +7,7 @@ const {
   readUsers,
   deleteCommentByCommentId,
   updateArticleVotes,
+  readSortedArticles,
 } = require("./news.models.js");
 const endpointsJson = require("./endpoints.json");
 
@@ -42,7 +43,8 @@ function getArticleById(request, response, next) {
 }
 
 function getAllArticles(request, response, next) {
-  readAllArticles()
+  const { topic, sort_by, order } = request.query;
+  readAllArticles(topic, sort_by, order)
     .then((articles) => {
       response.status(200).send(articles);
     })

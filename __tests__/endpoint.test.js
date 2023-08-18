@@ -370,3 +370,73 @@ describe("/api/users", () => {
       });
   });
 });
+
+describe("/api/articles(queries)", () => {
+  test("200: returns article with requested topic", () => {
+    const topic = "mitch";
+    return request(app)
+      .get(`/api/articles?topic=${topic}`)
+      .expect(200)
+      .then((response) => {
+        response.body.rows.forEach((article) => {
+          expect(article).toHaveProperty("title");
+          expect(article).toHaveProperty("author");
+          expect(article).toHaveProperty("body");
+          expect(article).toHaveProperty("article_img_url");
+          expect(article).toHaveProperty("created_at");
+          expect(article).toHaveProperty("votes");
+          expect(article).toHaveProperty("topic", topic);
+        });
+      });
+  });
+  test("200: sorts the articles by valid columns", () => {
+    const columnName = "title";
+    return request(app)
+      .get(`/api/articles?sort_by=${columnName}`)
+      .expect(200)
+      .then((response) => {
+        expect(response.body[0].title).toBe("Z");
+      });
+  });
+  test("200: changes information to order by ascending", () => {
+    const orderDirection = "asc";
+    return request(app)
+      .get(`/api/articles?order=${orderDirection}`)
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toBeSorted({ ascending: true });
+      });
+  });
+  test("200: sorts the articles by valid columns in ascending order", () => {
+    const columnName = "title";
+    const orderDirection = "asc";
+    return request(app)
+      .get(`/api/articles?sort_by=${columnName}&order=${orderDirection}`)
+      .expect(200)
+      .then((response) => {
+        expect(response.body[0].title).toBe("A");
+      });
+  });
+  test("200: filters by topic then sorts the articles by valid columns in ascending order", () => {
+    const topic = "mitch";
+    const columnName = "title";
+    const orderDirection = "asc";
+    return request(app)
+      .get(
+        `/api/articles?topic=${topic}&sort_by=${columnName}&order=${orderDirection}`
+      )
+      .expect(200)
+      .then((response) => {
+        expect(response.body.rows[0].title).toBe("A");
+      });
+  });
+//   test("400: invalid topic entered", () => {
+//     const topic = "invalid";
+//     return request(app)
+//       .get(`/api/articles?topic=${topic}`)
+//       .expect(400)
+//       .then((response) => {
+//         expect(response.body).toEqual({ msg: "Invalid topic" });
+//       });
+//   });
+});
