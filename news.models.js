@@ -60,10 +60,9 @@ const createComment = (article_id, username, body) => {
       }
     })
     .then(({ rows }) => {
-      return rows[0]
+      return rows[0];
     });
 };
-
 
 const readCommentsByArticleId = (article_id) => {
   return db
@@ -88,11 +87,47 @@ const readCommentsByArticleId = (article_id) => {
     });
 };
 
+const deleteCommentByCommentId = (comment_id) => {
+  return db
+    .query("SELECT * FROM comments WHERE comment_id =$1", [comment_id])
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "Not Found" });
+      }
+      return db
+        .query("DELETE FROM comments WHERE comment_id = $1", [comment_id])
+        .then(() => {
+          return Promise.resolve({ status: 204 });
+        });
+    });
+};
+
+const updateArticleVotes = (article_id, inc_votes) => {
+  if (inc_votes === undefined) {
+    return Promise.reject({ status: 400, msg: "Bad Request" });
+  } else {
+    if (typeof inc_votes !== "number") {
+      return Promise.reject({ status: 400, msg: "Invalid inc_votes value" });
+    }
+    return db
+      .query(
+        "UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *",
+        [inc_votes, article_id]
+      )
+      .then(({ rows }) => {
+        if (rows.length === 0) {
+          return Promise.reject({ status: 404, msg: "Article Not Found" });
+        }
+        return rows[0];
+      });
+  }
+};
+
 const readUsers = () => {
   return db.query("SELECT * FROM users").then(({ rows }) => {
     return rows;
-  });
-};
+  })
+}
 
 module.exports = {
   readTopics,
@@ -100,5 +135,7 @@ module.exports = {
   readAllArticles,
   createComment,
   readCommentsByArticleId,
-  readUsers
+  readUsers,
+  deleteCommentByCommentId,
+  updateArticleVotes,
 };

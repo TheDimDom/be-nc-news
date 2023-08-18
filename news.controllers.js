@@ -4,7 +4,9 @@ const {
   readAllArticles,
   readCommentsByArticleId,
   createComment,
-  readUsers
+  readUsers,
+  deleteCommentByCommentId,
+  updateArticleVotes,
 } = require("./news.models.js");
 const endpointsJson = require("./endpoints.json");
 
@@ -52,15 +54,18 @@ function getAllArticles(request, response, next) {
 function postNewComment(request, response, next) {
   const { article_id } = request.params;
   const { username, body } = request.body;
-  createComment(article_id, username, body).then((comment) => {
-    response.status(201).send(comment)
-  }).catch((err) => {
-    next (err)
-  })
+  createComment(article_id, username, body)
+    .then((comment) => {
+      response.status(201).send(comment);
+    })
+    .catch((err) => {
+      next(err);
+    });
 }
 function getCommentsByArticleId(request, response, next) {
   const { article_id } = request.params;
-  readCommentsByArticleId(article_id)
+  const { inc_votes } = request.body;
+  readCommentsByArticleId(article_id, inc_votes)
     .then((comments) => {
       response.status(200).send(comments);
     })
@@ -69,14 +74,33 @@ function getCommentsByArticleId(request, response, next) {
     });
 }
 
-function getUsers(request, response, next) {
-  readUsers()
-    .then((users) => {
-      response.status(200).send(users);
+function updateArticle(request, response, next) {
+  const { article_id } = request.params;
+  const { inc_votes } = request.body;
+  updateArticleVotes(article_id, inc_votes)
+    .then((updatedArticle) => {
+      response.status(200).send(updatedArticle);
     })
     .catch((err) => {
       next(err);
     });
+}
+
+function deleteComment(request, response, next) {
+  const { comment_id } = request.params;
+  deleteCommentByCommentId(comment_id)
+    .then(() => {
+      response.status(204).send({});
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
+
+function getUsers(request, response, next) {
+  readUsers().then((users) => {
+    response.status(200).send(users);
+  });
 }
 
 module.exports = {
@@ -86,5 +110,7 @@ module.exports = {
   getAllArticles,
   postNewComment,
   getCommentsByArticleId,
-  getUsers
+  getUsers,
+  deleteComment,
+  updateArticle,
 };

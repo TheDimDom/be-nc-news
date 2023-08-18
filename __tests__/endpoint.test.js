@@ -249,6 +249,108 @@ describe("/api/articles/:article_id/comments", () => {
   });
 });
 
+describe("/api/articles/:article_id", () => {
+  test("200: updates article votes and responds with updated article", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: 5 })
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toHaveProperty("votes", 105);
+      });
+  });
+  test("200: updates article votes and responds with updated article", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: -5 })
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toHaveProperty("votes", 95);
+      });
+  });
+  test("200: ignores additional key", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: -5, foo: 10 })
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toHaveProperty("votes", 95);
+      });
+  });
+  test("200: responds with original vote value when passed 0", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: 0 })
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toHaveProperty("votes", 100);
+      });
+  });
+  test("400: wrong inc_votes data type", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: "hello" })
+      .expect(400)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Invalid inc_votes value" });
+      });
+  });
+  test("400: wrong article_id data type", () => {
+    return request(app)
+      .patch("/api/articles/hello")
+      .send({ inc_votes: 10 })
+      .expect(400)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Bad Request" });
+      });
+  });
+  test("400: checks for relevant key", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({})
+      .expect(400)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Bad Request" });
+      });
+  });
+  test("404: checks for bad request with article_id = 5000", () => {
+    return request(app)
+      .patch("/api/articles/5000")
+      .send({ inc_votes: 10 })
+      .expect(404)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Not Found" });
+      });
+  });
+});
+
+describe("/api/comments/:comment_id", () => {
+  test("204: deletes comment", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+      .then((response) => {
+        expect(response.body).toEqual({});
+      });
+  });
+  test("400: wrong data type", () => {
+    return request(app)
+      .delete("/api/comments/hello")
+      .expect(400)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Bad Request" });
+      });
+  });
+  test("404: returns 404 if no comment", () => {
+    return request(app)
+      .delete("/api/comments/5000")
+      .expect(404)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Not Found" });
+      });
+  });
+});
+
 describe("/api/users", () => {
   test("200: returns all users", () => {
     return request(app).get("/api/users").expect(200);
