@@ -190,18 +190,18 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(response.body).toEqual({ msg: "Bad Request" });
       });
   });
-  test("404: checks for bad request with article_id = 5000", () => {    
+  test("404: checks for bad request with article_id = 5000", () => {
     const newComment = {
-    username: "icellusedkars",
-    body: "This is a test comment.",
-  };
+      username: "icellusedkars",
+      body: "This is a test comment.",
+    };
 
     const articleId = 5000;
     return request(app)
       .post(`/api/articles/${articleId}/comments`)
-      .send(newComment)
-})
-})
+      .send(newComment);
+  });
+});
 
 describe("/api/articles/:article_id/comments", () => {
   test("200: check length and comment property", () => {
@@ -228,9 +228,9 @@ describe("/api/articles/:article_id/comments", () => {
       .expect(200)
       .then((response) => {
         const comments = response.body;
-        expect(comments).toEqual([])
-      })
-  })
+        expect(comments).toEqual([]);
+      });
+  });
   test("404: checks for bad request with article_id = 5000", () => {
     return request(app)
       .get("/api/articles/5000/comments")
@@ -245,6 +245,81 @@ describe("/api/articles/:article_id/comments", () => {
       .expect(400)
       .then((response) => {
         expect(response.body).toEqual({ msg: "Bad Request" });
+      });
+  });
+});
+
+describe("/api/articles/:article_id", () => {
+  test("200: updates article votes and responds with updated article", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: 5 })
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toHaveProperty("votes", 105);
+      });
+  });
+  test("200: updates article votes and responds with updated article", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: -5 })
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toHaveProperty("votes", 95);
+      });
+  });
+  test("200: ignores additional key", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: -5, foo: 10 })
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toHaveProperty("votes", 95);
+      });
+  });
+  test("200: responds with original vote value when passed 0", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: 0 })
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toHaveProperty("votes", 100);
+      });
+  });
+  test("400: wrong inc_votes data type", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: "hello" })
+      .expect(400)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Invalid inc_votes value" });
+      });
+  });
+  test("400: wrong article_id data type", () => {
+    return request(app)
+      .patch("/api/articles/hello")
+      .send({ inc_votes: 10 })
+      .expect(400)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Bad Request" });
+      });
+  });
+  test("400: checks for relevant key", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({})
+      .expect(400)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Bad Request" });
+      });
+  });
+  test("404: checks for bad request with article_id = 5000", () => {
+    return request(app)
+      .patch("/api/articles/5000")
+      .send({ inc_votes: 10 })
+      .expect(404)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Not Found" });
       });
   });
 });
