@@ -7,6 +7,7 @@ const {
   getAllArticles,
   getCommentsByArticleId,
   postNewComment,
+  getUsers,
   deleteComment,
   updateArticle,
 
@@ -27,6 +28,7 @@ app.post("/api/articles/:article_id/comments", postNewComment);
 
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
+app.get("/api/users", getUsers);
 app.delete("/api/comments/:comment_id", deleteComment)
 
 app.patch("/api/articles/:article_id", updateArticle);

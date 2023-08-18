@@ -101,6 +101,7 @@ const deleteCommentByCommentId = (comment_id) => {
         });
     });
 };
+
 const updateArticleVotes = (article_id, inc_votes) => {
   if (inc_votes === undefined) {
     return Promise.reject({ status: 400, msg: "Bad Request" });
@@ -122,12 +123,19 @@ const updateArticleVotes = (article_id, inc_votes) => {
   }
 };
 
+const readUsers = () => {
+  return db.query("SELECT * FROM users").then(({ rows }) => {
+    return rows;
+  })
+}
+
 module.exports = {
   readTopics,
   readArticleById,
   readAllArticles,
   createComment,
   readCommentsByArticleId,
+  readUsers,
   deleteCommentByCommentId,
   updateArticleVotes,
 };

@@ -4,6 +4,7 @@ const {
   readAllArticles,
   readCommentsByArticleId,
   createComment,
+  readUsers,
   deleteCommentByCommentId,
   updateArticleVotes,
 } = require("./news.models.js");
@@ -73,17 +74,6 @@ function getCommentsByArticleId(request, response, next) {
     });
 }
 
-function deleteComment(request, response, next) {
-  const { comment_id } = request.params
-  deleteCommentByCommentId(comment_id)
-  .then(() => {
-    response.status(204).send({});
-  })
-  .catch((err) => {
-    next(err);
-  });
-}
-
 function updateArticle(request, response, next) {
   const { article_id } = request.params;
   const { inc_votes } = request.body;
@@ -96,6 +86,23 @@ function updateArticle(request, response, next) {
     });
 }
 
+function deleteComment(request, response, next) {
+  const { comment_id } = request.params;
+  deleteCommentByCommentId(comment_id)
+    .then(() => {
+      response.status(204).send({});
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
+
+function getUsers(request, response, next) {
+  readUsers().then((users) => {
+    response.status(200).send(users);
+  });
+}
+
 module.exports = {
   getTopics,
   getEndpoints,
@@ -103,6 +110,7 @@ module.exports = {
   getAllArticles,
   postNewComment,
   getCommentsByArticleId,
+  getUsers,
   deleteComment,
   updateArticle,
 };
