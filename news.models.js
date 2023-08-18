@@ -87,6 +87,20 @@ const readCommentsByArticleId = (article_id) => {
     });
 };
 
+const deleteCommentByCommentId = (comment_id) => {
+  return db
+    .query("SELECT * FROM comments WHERE comment_id =$1", [comment_id])
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "Not Found" });
+      }
+      return db
+        .query("DELETE FROM comments WHERE comment_id = $1", [comment_id])
+        .then(() => {
+          return Promise.resolve({ status: 204 });
+        });
+    });
+};
 const updateArticleVotes = (article_id, inc_votes) => {
   if (inc_votes === undefined) {
     return Promise.reject({ status: 400, msg: "Bad Request" });
@@ -114,5 +128,6 @@ module.exports = {
   readAllArticles,
   createComment,
   readCommentsByArticleId,
+  deleteCommentByCommentId,
   updateArticleVotes,
 };

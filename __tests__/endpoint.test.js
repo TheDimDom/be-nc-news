@@ -323,3 +323,30 @@ describe("/api/articles/:article_id", () => {
       });
   });
 });
+
+describe("/api/comments/:comment_id", () => {
+  test("204: deletes comment", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+      .then((response) => {
+        expect(response.body).toEqual({});
+      });
+  });
+  test("400: wrong data type", () => {
+    return request(app)
+      .delete("/api/comments/hello")
+      .expect(400)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Bad Request" });
+      });
+  });
+  test("404: returns 404 if no comment", () => {
+    return request(app)
+      .delete("/api/comments/5000")
+      .expect(404)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Not Found" });
+      });
+  });
+});
