@@ -29,7 +29,7 @@
 
   "GET /api/articles/:article_id": {
     "description": "serves an article object which has been requested",
-    "queries": ["author", "topic", "sort_by", "order"],
+    "queries": ["article_id"],
     "exampleResponse": {
       "title": "The Rise Of Thinking Machines: How IBM's Watson Takes On The World",
       "topic": "coding",
@@ -38,6 +38,46 @@
       "created_at": 1589418120000,
       "votes": 0,
       "article_img_url": "https://images.pexels.com/photos/373543/pexels-photo-373543.jpeg?w=700&h=700"
+    }
+  },
+
+  "GET /api/articles/:article_id/comments": {
+    "description": "serves comments from the requested article",
+    "queries": ["article_id"],
+    "exampleResponse": {
+      "body": "Nobis consequatur animi. Ullam nobis quaerat voluptates veniam.",
+      "votes": 7,
+      "author": "grumpy19",
+      "article_id": 4,
+      "created_at": 1577890920000
+    }
+  },
+
+  "POST /api/articles/:article_id/comments": {
+    "description": "adds a comment to the requested article",
+    "queries": ["article_id"],
+    "exampleResponse": {}
+  },
+
+  "PATCH /api/articles/:article_id": {
+    "description": "updates an article",
+    "queries": ["article_id"],
+    "exampleResponse": {}
+  },
+
+  "DELETE /api/comments/:comment_id": {
+    "description": "deletes a comment",
+    "queries": ["comment_id"],
+    "exampleResponse": {}
+  },
+
+  "GET /api/users": {
+    "description": "serves a list of all the users",
+    "queries": [],
+    "exampleResponse": {
+      "username": "tickle122",
+      "name": "Tom Tickle",
+      "avatar_url": "https://vignette.wikia.nocookie.net/mrmen/images/d/d6/Mr-Tickle-9a.png/revision/latest?cb=20180127221953"
     }
   }
 }
