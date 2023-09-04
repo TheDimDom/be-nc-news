@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require('cors');
 const app = express();
 const {
   getTopics,
@@ -12,6 +13,8 @@ const {
   updateArticle,
 } = require("./news.controllers");
 const { handle400s, handleCustomErrors } = require("./error.controllers.js");
+
+app.use(cors());
 
 app.use(express.json());
 
