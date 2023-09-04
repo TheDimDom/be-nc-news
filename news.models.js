@@ -55,6 +55,7 @@ const readAllArticles = (topic, sort_by = "created_at", order = "desc") => {
         articles.author,
         articles.title,
         articles.article_id,
+        articles.body,
         articles.topic,
         articles.created_at,
         articles.votes,
