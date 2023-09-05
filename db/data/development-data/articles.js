@@ -338,7 +338,7 @@ module.exports = [
     author: "grumpy19",
     body: "The 'umami' craze has turned a much-maligned and misunderstood food additive into an object of obsession for the world’s most innovative chefs. But secret ingredient monosodium glutamate’s biggest secret may be that there was never anything wrong with it at all.",
     created_at: 1606043580000,
-    votes: 0,
+    votes: 2,
     article_img_url:
       "https://images.pexels.com/photos/2403392/pexels-photo-2403392.jpeg?w=700&h=700",
   },
