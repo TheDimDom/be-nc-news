@@ -430,13 +430,23 @@ describe("/api/articles(queries)", () => {
         expect(response.body.rows[0].title).toBe("A");
       });
   });
-//   test("400: invalid topic entered", () => {
-//     const topic = "invalid";
-//     return request(app)
-//       .get(`/api/articles?topic=${topic}`)
-//       .expect(400)
-//       .then((response) => {
-//         expect(response.body).toEqual({ msg: "Invalid topic" });
-//       });
-//   });
+  test("400: invalid sort_by column", () => {
+    const invalidColumnName = "invalid_column";
+    return request(app)
+      .get(`/api/articles?sort_by=${invalidColumnName}`)
+      .expect(400)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Invalid sort_by column" });
+      });
+  });
+
+  test("400: invalid order direction", () => {
+    const invalidOrderDirection = "invalid_direction";
+    return request(app)
+      .get(`/api/articles?order=${invalidOrderDirection}`)
+      .expect(400)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Order must be 'asc' or 'desc'" });
+      });
+  });
 });
