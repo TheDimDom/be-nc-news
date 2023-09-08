@@ -27,6 +27,7 @@ const validSortColumns = [
   "topic",
   "created_at",
   "votes",
+  "comment_count",
 ];
 
 const readAllArticles = (topic, sort_by = "created_at", order = "desc") => {
