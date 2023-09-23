@@ -93,7 +93,7 @@ describe("api/articles/:article_id", () => {
 describe("/api/articles", () => {
   test("200: returns articles ordered by created_at in descending order", () => {
     return request(app)
-      .get("/api/articles")
+      .get("/api/articles?topic=&order_by=created_at&order=desc")
       .expect(200)
       .then((response) => {
         const articles = response.body;
@@ -378,7 +378,7 @@ describe("/api/articles(queries)", () => {
       .get(`/api/articles?topic=${topic}`)
       .expect(200)
       .then((response) => {
-        response.body.rows.forEach((article) => {
+        response.body.forEach((article) => {
           expect(article).toHaveProperty("title");
           expect(article).toHaveProperty("author");
           expect(article).toHaveProperty("body");
@@ -427,7 +427,7 @@ describe("/api/articles(queries)", () => {
       )
       .expect(200)
       .then((response) => {
-        expect(response.body.rows[0].title).toBe("A");
+        expect(response.body[0].title).toBe("A");
       });
   });
   test("400: invalid sort_by column", () => {

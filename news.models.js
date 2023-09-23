@@ -40,41 +40,36 @@ const readAllArticles = (topic, sort_by = "created_at", order = "desc") => {
       msg: "Order must be 'asc' or 'desc'",
     });
   }
+
+  let baseQuery = `
+    SELECT 
+      articles.author,
+      articles.title,
+      articles.article_id,
+      articles.body,
+      articles.topic,
+      articles.created_at,
+      articles.votes,
+      articles.article_img_url,
+      COUNT(comments.comment_id) AS comment_count
+    FROM articles
+    LEFT JOIN comments ON articles.article_id = comments.article_id
+  `;
+
+  let queryParams = [];
   if (topic) {
-    return db.query(
-      "SELECT * FROM articles WHERE topic = $1 ORDER BY " +
-        sort_by +
-        " " +
-        order,
-      [topic]
-    );
+    baseQuery += ` WHERE articles.topic = $1 `;
+    queryParams.push(topic);
   }
-  return db
-    .query(
-      `
-      SELECT 
-        articles.author,
-        articles.title,
-        articles.article_id,
-        articles.body,
-        articles.topic,
-        articles.created_at,
-        articles.votes,
-        articles.article_img_url,
-        COUNT(comments.comment_id) AS comment_count
-      FROM articles
-      LEFT JOIN comments ON articles.article_id = comments.article_id
-      GROUP BY articles.article_id
-      ORDER BY ` +
-        sort_by +
-        ` ` +
-        order +
-        `;
-    `
-    )
-    .then(({ rows }) => {
-      return rows;
-    });
+
+  baseQuery += `
+    GROUP BY articles.article_id
+    ORDER BY ${sort_by} ${order};
+  `;
+
+  return db.query(baseQuery, queryParams).then(({ rows }) => {
+    return rows;
+  });
 };
 
 const createComment = (article_id, username, body) => {
